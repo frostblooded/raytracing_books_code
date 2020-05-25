@@ -1,5 +1,5 @@
 #include <iostream>
-#include "vec3.h"
+#include "structs/vec3.h"
 
 using namespace std;
 
@@ -15,7 +15,7 @@ int main()
     {
         for (int i = 0; i < nx; i++)
         {
-            Vec3 col(float(i) / float(nx), float(j) / float(ny), 0.2);
+            vec3 col(float(i) / float(nx), float(j) / float(ny), 0.2);
             int ir = int(255.99 * col.r());
             int ig = int(255.99 * col.g());
             int ib = int(255.99 * col.b());
