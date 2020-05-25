@@ -1,5 +1,6 @@
 #include <iostream>
 #include "structs/vec3.h"
+#include "structs/ray.h"
 
 using namespace std;
 
