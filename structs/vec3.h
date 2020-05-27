@@ -22,6 +22,7 @@ struct vec3
     inline vec3 operator-() { return vec3(-e[0], -e[1], -e[2]); }
 
     inline vec3 operator+(const vec3 &v2) const { return vec3(e[0] + v2[0], e[1] + v2[1], e[2] + v2[2]); }
+    inline vec3 operator-(const vec3 &v2) const { return vec3(e[0] - v2[0], e[1] - v2[1], e[2] - v2[2]); }
     inline vec3 operator*(const vec3 &v2) const { return vec3(e[0] * v2[0], e[1] * v2[1], e[2] * v2[2]); }
     inline vec3 operator*(const float f) const { return vec3(e[0] * f, e[1] * f, e[2] * f); }
     inline vec3 operator/(const float f) const { return vec3(e[0] / f, e[1] / f, e[2] / f); }
@@ -36,11 +37,13 @@ struct vec3
     inline vec3 &operator*=(const float t);
     inline vec3 &operator/=(const float t);
 
+    inline float dot(const vec3 &v) const { return e[0] * v[0] + e[1] * v[1] + e[2] * v[2]; }
     inline float length() const { return sqrt(squared_length()); }
     inline float squared_length() const { return e[0] * e[0] + e[1] * e[1] + e[2] * e[2]; }
     inline vec3 unit_vector() const { return *this / length(); }
 
     friend ostream &operator<<(ostream &, const vec3 &);
+    friend vec3 operator*(const float t, const vec3 &v);
 
     float e[3];
 };
@@ -91,12 +94,6 @@ inline vec3 &vec3::operator/=(const float t)
     e[1] /= t;
     e[2] /= t;
     return *this;
-}
-
-ostream &operator<<(ostream &os, const vec3 &vec3)
-{
-    os << "(" << vec3.x() << ", " << vec3.y() << ", " << vec3.z() << ")";
-    return os;
 }
 
 #endif
