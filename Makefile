@@ -1,2 +1,2 @@
 all:
-	g++ -o main main.cpp structs/hitable_list.cpp structs/sphere.cpp structs/vec3.cpp structs/camera.cpp
+	g++ -o main main.cpp structs/hitable_list.cpp structs/sphere.cpp structs/vec3.cpp structs/camera.cpp src/random_in_unit_sphere.cpp
