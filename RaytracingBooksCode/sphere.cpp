@@ -1,6 +1,6 @@
 #include "sphere.h"
 
-bool sphere::hit(const ray &r, float t_min, float t_max, hit_record &rec) const
+bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const
 {
     vec3 oc = r.origin() - center;
     float a = r.direction().squared_length();

@@ -1,20 +1,23 @@
 #include <iostream>
-#include "src/random_in_unit_sphere.h"
-#include "structs/materials/lambertian.h"
-#include "structs/materials/metal.h"
-#include "structs/vec3.h"
-#include "structs/ray.h"
-#include "structs/hitable_list.h"
-#include "structs/sphere.h"
-#include "structs/camera.h"
+#include <fstream>
+#include <time.h>
+#include "random.h"
+#include "lambertian.h"
+#include "metal.h"
+#include "vec3.h"
+#include "ray.h"
+#include "hitable_list.h"
+#include "sphere.h"
+#include "camera.h"
+#include <cfloat>
 
 using namespace std;
 
-vec3 color(const ray &r, hitable *world, int depth)
+vec3 color(const ray& r, hitable* world, int depth)
 {
     hit_record rec;
 
-    if (world->hit(r, 0.001, MAXFLOAT, rec))
+    if (world->hit(r, 0.001, FLT_MAX, rec))
     {
         ray scattered;
         vec3 attenuation;
@@ -34,22 +37,23 @@ vec3 color(const ray &r, hitable *world, int depth)
 
 int main()
 {
-    srand48(time(0));
+    srand(time(0));
+    ofstream file;
+    file.open("test.ppm");
 
     int nx = 200;
     int ny = 100;
     int ns = 100;
 
-    cout << "P3\n"
-         << nx << " " << ny << "\n255\n";
+    file << "P3\n" << nx << " " << ny << "\n255\n";
 
-    hitable *list[4];
+    hitable* list[4];
     list[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
     list[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8, 0)));
     list[2] = new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2), 0.3));
     list[3] = new sphere(vec3(-1, 0, -1), 0.5, new metal(vec3(0.8, 0.8, 0.8), 1));
 
-    hitable *world = new hitable_list(list, 4);
+    hitable* world = new hitable_list(list, 4);
     camera cam;
 
     for (int j = ny - 1; j >= 0; j--)
@@ -60,8 +64,8 @@ int main()
 
             for (int s = 0; s < ns; s++)
             {
-                float u = float(i + drand48()) / float(nx);
-                float v = float(j + drand48()) / float(ny);
+                float u = float(i + random()) / float(nx);
+                float v = float(j + random()) / float(ny);
 
                 ray r = cam.get_ray(u, v);
                 vec3 p = r.point_at_parameter(2.0);
@@ -74,9 +78,11 @@ int main()
             int ig = int(255.99 * col.g());
             int ib = int(255.99 * col.b());
 
-            cout << ir << " " << ig << " " << ib << "\n";
+            file << ir << " " << ig << " " << ib << "\n";
         }
     }
 
+    file.close();
     return 0;
 }
+

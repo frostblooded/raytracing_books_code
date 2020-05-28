@@ -2,10 +2,11 @@
 #define METALH
 
 #include "material.h"
+#include "random.h"
 
 struct metal : public material
 {
-    metal(const vec3 &a, float f) : albedo(a)
+    metal(const vec3& a, float f) : albedo(a)
     {
         if (f >= 1)
         {
@@ -15,7 +16,7 @@ struct metal : public material
         fuzz = f;
     }
 
-    virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const
+    virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const
     {
         vec3 reflected = reflect(r_in.direction().unit_vector(), rec.normal);
         scattered = ray(rec.p, reflected + fuzz * random_in_unit_sphere());
@@ -23,7 +24,7 @@ struct metal : public material
         return scattered.direction().dot(rec.normal) > 0;
     }
 
-    vec3 reflect(const vec3 &v, const vec3 &n) const
+    vec3 reflect(const vec3& v, const vec3& n) const
     {
         return v - 2 * v.dot(n) * n;
     }
