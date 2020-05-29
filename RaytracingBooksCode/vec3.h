@@ -19,7 +19,7 @@ struct vec3
     inline float b() const { return e[2]; }
 
     inline const vec3& operator+() { return *this; }
-    inline vec3 operator-() { return vec3(-e[0], -e[1], -e[2]); }
+    inline vec3 operator-() const { return vec3(-e[0], -e[1], -e[2]); }
 
     inline vec3 operator+(const vec3& v2) const { return vec3(e[0] + v2[0], e[1] + v2[1], e[2] + v2[2]); }
     inline vec3 operator-(const vec3& v2) const { return vec3(e[0] - v2[0], e[1] - v2[1], e[2] - v2[2]); }
@@ -38,12 +38,23 @@ struct vec3
     inline vec3& operator/=(const float t);
 
     inline float dot(const vec3& v) const { return e[0] * v[0] + e[1] * v[1] + e[2] * v[2]; }
+
+    inline vec3 cross(const vec3& v) const {
+        return vec3(e[1] * v[2] - e[2] * v[1], 
+                  -(e[0] * v[2] - e[2] * v[0]),
+                    e[0] * v[1] - e[1] * v[0]);
+    }
+
+    // Reflect on the surface of the passed in normal vector
+    inline vec3 reflect(const vec3& n) const { return *this - 2 * this->dot(n) * n; }
+
     inline float length() const { return sqrt(squared_length()); }
     inline float squared_length() const { return e[0] * e[0] + e[1] * e[1] + e[2] * e[2]; }
     inline vec3 unit_vector() const { return *this / length(); }
 
     friend ostream& operator<<(ostream&, const vec3&);
     friend vec3 operator*(const float t, const vec3& v);
+
 
     float e[3];
 };

@@ -1,8 +1,11 @@
 #include <iostream>
+#define _USE_MATH_DEFINES
+#include "math.h"
 #include <fstream>
 #include <time.h>
 #include "random.h"
 #include "lambertian.h"
+#include "dielectric.h"
 #include "metal.h"
 #include "vec3.h"
 #include "ray.h"
@@ -47,14 +50,19 @@ int main()
 
     file << "P3\n" << nx << " " << ny << "\n255\n";
 
-    hitable* list[4];
-    list[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
+    hitable* list[5];
+    list[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.1, 0.2, 0.5)));
     list[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8, 0)));
     list[2] = new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2), 0.3));
-    list[3] = new sphere(vec3(-1, 0, -1), 0.5, new metal(vec3(0.8, 0.8, 0.8), 1));
+    list[3] = new sphere(vec3(-1, 0, -1), 0.5, new dielectric(1.5));
+    list[4] = new sphere(vec3(-1, 0, -1), -0.45, new dielectric(1.5));
+    hitable* world = new hitable_list(list, 5);
 
-    hitable* world = new hitable_list(list, 4);
-    camera cam;
+    vec3 lookfrom(3, 3, 2);
+    vec3 lookat(0, 0, -1);
+    float dist_to_focus = (lookfrom - lookat).length();
+    float aperture = 2;
+    camera cam(lookfrom, lookat, vec3(0, 1, 0), 20, float(nx) / float(ny), aperture, dist_to_focus);
 
     for (int j = ny - 1; j >= 0; j--)
     {

@@ -16,3 +16,13 @@ vec3 random_in_unit_sphere()
 
     return p;
 }
+
+vec3 random_in_unit_disk() {
+    vec3 p;
+
+    do {
+        p = 2 * vec3(random(), random(), 0) - vec3(1, 1, 0);
+    } while (p.squared_length() >= 1);
+
+    return p;
+}
