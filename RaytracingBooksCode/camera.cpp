@@ -3,7 +3,7 @@
 #include <math.h>
 #include "random.h"
 
-camera::camera(vec3 lookfrom, vec3 lookat, vec3 vup, float vfov, float aspect, float aperture, float focus_dist)
+camera::camera(vec3 lookfrom, vec3 lookat, vec3 vup, float vfov, float aspect, float aperture, float focus_dist, float t0, float t1)
 {
 	lens_radius = aperture / 2;
 	float theta = vfov * M_PI / 180;
@@ -16,11 +16,15 @@ camera::camera(vec3 lookfrom, vec3 lookat, vec3 vup, float vfov, float aspect, f
 	lower_left_corner = origin - half_width * focus_dist * u - focus_dist * half_height * v - focus_dist * w;
 	horizontal = 2 * half_width * focus_dist * u;
 	vertical = 2 * half_height * focus_dist * v;
+	time0 = t0;
+	time1 = t1;
 }
 
 ray camera::get_ray(float s, float t)
 {
 	vec3 rd = lens_radius * random_in_unit_disk();
 	vec3 offset = u * rd.x() + v * rd.y();
-	return ray(origin + offset, lower_left_corner + s * horizontal + t * vertical - origin - offset);
+	return ray(origin + offset,
+		lower_left_corner + s * horizontal + t * vertical - origin - offset,
+		random(time0, time1));
 }

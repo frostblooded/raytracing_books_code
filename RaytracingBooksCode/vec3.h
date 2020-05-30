@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <iostream>
+#include "random.h"
 
 using namespace std;
 
@@ -51,6 +52,14 @@ struct vec3
     inline float length() const { return sqrt(squared_length()); }
     inline float squared_length() const { return e[0] * e[0] + e[1] * e[1] + e[2] * e[2]; }
     inline vec3 unit_vector() const { return *this / length(); }
+
+    inline static vec3 random_vec() {
+        return vec3(random(), random(), random());
+    }
+
+    inline static vec3 random_vec(float min, float max) {
+        return vec3(random(min, max), random(min, max), random(min, max));
+    }
 
     friend ostream& operator<<(ostream&, const vec3&);
     friend vec3 operator*(const float t, const vec3& v);
