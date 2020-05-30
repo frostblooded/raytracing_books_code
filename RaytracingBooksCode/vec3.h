@@ -107,4 +107,7 @@ inline vec3& vec3::operator/=(const float t)
     return *this;
 }
 
+using point3 = vec3;
+using color = vec3;
+
 #endif
