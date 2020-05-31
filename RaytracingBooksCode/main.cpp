@@ -56,7 +56,7 @@ hitable* random_scene() {
 vec3 ray_color(const ray& r, hitable* world, int depth)
 {
     if (depth <= 0) {
-        return;
+        return vec3(0, 0, 0);
     }
 
     hit_record rec;
@@ -112,7 +112,7 @@ int main()
                 float v = float(j + random()) / float(image_height);
 
                 ray r = cam.get_ray(u, v);
-                col += ray_color(r, world, 0);
+                col += ray_color(r, world, 50);
             }
 
             col /= float(samples_per_pixel);
