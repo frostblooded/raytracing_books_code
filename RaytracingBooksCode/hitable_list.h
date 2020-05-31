@@ -4,6 +4,7 @@
 #include "vec3.h"
 #include "hit_record.h"
 #include "ray.h"
+#include <vector>
 #include "hitable_list.h"
 #include "hitable.h"
 
@@ -11,15 +12,15 @@ struct hitable_list : public hitable
 {
     hitable_list() {}
 
-    hitable_list(hitable** l, int n)
+    hitable_list(vector<shared_ptr<hitable>> l, int n)
     {
-        list = l;
-        list_size = n;
+        objects = l;
     }
 
     virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const;
-    hitable** list;
-    int list_size;
+    virtual bool bounding_box(float t0, float t1, aabb& output_box) const override;
+
+    vector<shared_ptr<hitable>> objects;
 };
 
 #endif

@@ -9,6 +9,7 @@ struct moving_sphere : public hitable
 	moving_sphere(point3 cen0, point3 cen1, float t0, float t1, float r, shared_ptr<material> m);
 
 	virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const override;
+    bool bounding_box(float t0, float t1, aabb& output_box) const;
 	point3 center(float time) const;
 
 	point3 center0, center1;

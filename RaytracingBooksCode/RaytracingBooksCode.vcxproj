@@ -139,8 +139,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="aabb.cpp" />
+    <ClCompile Include="bvh_node.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="dielectric.cpp" />
+    <ClCompile Include="hitable.cpp" />
     <ClCompile Include="hitable_list.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="moving_sphere.cpp" />
@@ -149,6 +152,8 @@
     <ClCompile Include="vec3.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aabb.h" />
+    <ClInclude Include="bvh_node.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="dielectric.h" />
     <ClInclude Include="hitable.h" />

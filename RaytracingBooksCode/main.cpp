@@ -1,6 +1,7 @@
 #include <iostream>
 #define _USE_MATH_DEFINES
 #include "math.h"
+#include "bvh_node.h"
 #include <fstream>
 #include <time.h>
 #include "random.h"
@@ -17,10 +18,11 @@
 
 using namespace std;
 
-hitable* random_scene() {
+hitable_list random_scene() {
     int n = 500;
-    hitable** list = new hitable * [n + 1];
-    list[0] = new sphere(vec3(0, -1000, 0), 1000, make_shared<lambertian>(vec3(0.5, 0.5, 0.5)));
+    vector<shared_ptr<hitable>> list;
+
+    list.push_back(make_shared<sphere>(vec3(0, -1000, 0), 1000, make_shared<lambertian>(vec3(0.5, 0.5, 0.5))));
 
     int i = 1;
 
@@ -34,26 +36,26 @@ hitable* random_scene() {
                     auto albedo = color::random_vec() * color::random_vec();
                     shared_ptr<material> mat = make_shared<lambertian>(albedo);
                     auto center2 = center + vec3(0, random(0, 0.5), 0);
-                    list[i++] = new moving_sphere(center, center2, 0.0, 1.0, 0.2, mat);
+                    list.push_back(make_shared<moving_sphere>(center, center2, 0, 1, 0.2, mat));
                 }
                 else if (choose_mat < 0.95) {
-                    list[i++] = new sphere(center, 0.2, make_shared<metal>(vec3(0.5 * (1 + random()), 0.5 * (1 + random()), 0.5 * (1 + random())), 0.5 * random()));
+                    list.push_back(make_shared<sphere>(center, 0.2, make_shared<metal>(vec3(0.5 * (1 + random()), 0.5 * (1 + random()), 0.5 * (1 + random())), 0.5 * random())));
                 }
                 else {
-                    list[i++] = new sphere(center, 0.2, make_shared<dielectric>(1.5));
+                    list.push_back(make_shared<sphere>(center, 0.2, make_shared<dielectric>(1.5)));
                 }
             }
         }
     }
 
-    list[i++] = new sphere(vec3(0, 1, 0), 1.0, make_shared<dielectric>(1.5));
-    list[i++] = new sphere(vec3(-4, 1, 0), 1.0, make_shared<lambertian>(vec3(0.4, 0.2, 0.1)));
-    list[i++] = new sphere(vec3(4, 1, 0), 1.0, make_shared<metal>(vec3(0.7, 0.6, 0.5), 0));
+    list.push_back(make_shared<sphere>(vec3(0, 1, 0), 1.0, make_shared<dielectric>(1.5)));
+    list.push_back(make_shared<sphere>(vec3(-4, 1, 0), 1.0, make_shared<lambertian>(vec3(0.4, 0.2, 0.1))));
+    list.push_back(make_shared<sphere>(vec3(4, 1, 0), 1.0, make_shared<metal>(vec3(0.7, 0.6, 0.5), 0)));
 
-    return new hitable_list(list, i);
+    return hitable_list(list, i);
 }
 
-vec3 ray_color(const ray& r, hitable* world, int depth)
+vec3 ray_color(const ray& r, bvh_node& world, int depth)
 {
     if (depth <= 0) {
         return vec3(0, 0, 0);
@@ -61,7 +63,7 @@ vec3 ray_color(const ray& r, hitable* world, int depth)
 
     hit_record rec;
 
-    if (world->hit(r, 0.001, FLT_MAX, rec))
+    if (world.hit(r, 0.001, FLT_MAX, rec))
     {
         ray scattered;
         color attenuation;
@@ -92,7 +94,8 @@ int main()
 
     file << "P3\n" << image_width << " " << image_height << "\n255\n";
 
-    hitable* world = random_scene();
+    hitable_list objects = random_scene();
+    bvh_node world(objects, 0, 1);
     vec3 lookfrom(13, 2, 3);
     vec3 lookat(0, 0, 0);
     vec3 vup(0, 1, 0);

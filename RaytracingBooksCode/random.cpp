@@ -10,6 +10,10 @@ float random(float min, float max) {
     return min + (max - min) * random();
 }
 
+int random_int(int min, int max) {
+    return min + (rand() % (max - min + 1));
+}
+
 vec3 random_in_unit_sphere()
 {
     while (true) {
