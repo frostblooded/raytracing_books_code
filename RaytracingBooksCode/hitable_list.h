@@ -12,7 +12,7 @@ struct hitable_list : public hitable
 {
     hitable_list() {}
 
-    hitable_list(vector<shared_ptr<hitable>> l, int n)
+    hitable_list(vector<shared_ptr<hitable>> l)
     {
         objects = l;
     }

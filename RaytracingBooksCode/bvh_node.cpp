@@ -16,7 +16,7 @@ inline bool box_compare(const shared_ptr<hitable> a, const shared_ptr<hitable> b
 		cerr << "No bounding box in bvh_node constructor.\n";
 	}
 
-	return box_a.min().e[axis] < box_b.min().e[axis];
+	return box_a.min()[axis] < box_b.min()[axis];
 }
 
 inline bool box_x_compare(const shared_ptr<hitable> a, const shared_ptr<hitable> b) {
@@ -37,8 +37,6 @@ bvh_node::bvh_node(vector<shared_ptr<hitable>>& objects, size_t start, size_t en
 	comparator = (axis == 0) ? box_x_compare
 					: (axis == 1) ? box_y_compare
 								  : box_z_compare;
-
-	// bool (
 
 	size_t object_span = end - start;
 
@@ -61,6 +59,15 @@ bvh_node::bvh_node(vector<shared_ptr<hitable>>& objects, size_t start, size_t en
 		left = make_shared<bvh_node>(objects, start, mid, time0, time1);
 		right = make_shared<bvh_node>(objects, mid, end, time0, time1);
 	}
+
+	aabb box_left, box_right;
+
+	if (!left->bounding_box(time0, time1, box_left)
+		|| !right->bounding_box(time0, time1, box_right)) {
+		cerr << "No bounding box found in bvh_node constructor.\n";
+	}
+
+	box = surrounding_box(box_left, box_right);
 }
 
 bool bvh_node::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
@@ -69,7 +76,7 @@ bool bvh_node::hit(const ray& r, float t_min, float t_max, hit_record& rec) cons
 	}
 
 	bool hit_left = left->hit(r, t_min, t_max, rec);
-	bool hit_right = left->hit(r, t_min, hit_left ? rec.t : t_max, rec);
+	bool hit_right = right->hit(r, t_min, hit_left ? rec.t : t_max, rec);
 
 	return hit_left || hit_right;
 }

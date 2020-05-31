@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 #define _USE_MATH_DEFINES
 #include "math.h"
 #include "bvh_node.h"
@@ -19,12 +20,10 @@
 using namespace std;
 
 hitable_list random_scene() {
-    int n = 500;
     vector<shared_ptr<hitable>> list;
 
-    list.push_back(make_shared<sphere>(vec3(0, -1000, 0), 1000, make_shared<lambertian>(vec3(0.5, 0.5, 0.5))));
-
-    int i = 1;
+    auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
+    list.push_back(make_shared<sphere>(vec3(0, -1000, 0), 1000, ground_material));
 
     for (int a = -11; a < 11; a++) {
         for (int b = -11; b < 11; b++) {
@@ -32,17 +31,23 @@ hitable_list random_scene() {
             vec3 center(a + 0.9 * random(), 0.2, b + 0.9 * random());
 
             if ((center - vec3(4, 0.2, 0)).length() > 0.9) {
+                shared_ptr<material> sphere_material;
+
                 if (choose_mat < 0.8) {
                     auto albedo = color::random_vec() * color::random_vec();
-                    shared_ptr<material> mat = make_shared<lambertian>(albedo);
+                    sphere_material = make_shared<lambertian>(albedo);
                     auto center2 = center + vec3(0, random(0, 0.5), 0);
-                    list.push_back(make_shared<moving_sphere>(center, center2, 0, 1, 0.2, mat));
+                    list.push_back(make_shared<moving_sphere>(center, center2, 0, 1, 0.2, sphere_material));
                 }
                 else if (choose_mat < 0.95) {
-                    list.push_back(make_shared<sphere>(center, 0.2, make_shared<metal>(vec3(0.5 * (1 + random()), 0.5 * (1 + random()), 0.5 * (1 + random())), 0.5 * random())));
+                    auto albedo = color::random_vec(0.5, 1);
+                    auto fuzz = random(0, 0.5);
+                    sphere_material = make_shared<metal>(albedo, fuzz);
+                    list.push_back(make_shared<sphere>(center, 0.2, sphere_material));
                 }
                 else {
-                    list.push_back(make_shared<sphere>(center, 0.2, make_shared<dielectric>(1.5)));
+                    sphere_material = make_shared<dielectric>(1.5);
+                    list.push_back(make_shared<sphere>(center, 0.2, sphere_material));
                 }
             }
         }
@@ -52,7 +57,7 @@ hitable_list random_scene() {
     list.push_back(make_shared<sphere>(vec3(-4, 1, 0), 1.0, make_shared<lambertian>(vec3(0.4, 0.2, 0.1))));
     list.push_back(make_shared<sphere>(vec3(4, 1, 0), 1.0, make_shared<metal>(vec3(0.7, 0.6, 0.5), 0)));
 
-    return hitable_list(list, i);
+    return hitable_list(list);
 }
 
 vec3 ray_color(const ray& r, bvh_node& world, int depth)
@@ -83,6 +88,7 @@ vec3 ray_color(const ray& r, bvh_node& world, int depth)
 
 int main()
 {
+    auto t1 = chrono::high_resolution_clock::now();
     srand(time(0));
     ofstream file;
     file.open("test.ppm");
@@ -133,6 +139,9 @@ int main()
     }
 
     file.close();
+    auto t2 = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::milliseconds>(t2 - t1).count();
+    cout << "Program execution took " << duration << " milliseconds" << endl;
     return 0;
 }
 
