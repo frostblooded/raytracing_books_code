@@ -87,7 +87,7 @@ int main()
 
     int image_width = 400;
     int image_height = 300;
-    int samples_per_pixel = 10;
+    int samples_per_pixel = 100;
     const auto aspect_ratio = float(image_width) / image_height;
 
     file << "P3\n" << image_width << " " << image_height << "\n255\n";
@@ -98,7 +98,7 @@ int main()
     vec3 vup(0, 1, 0);
     float dist_to_focus = 10;
     float aperture = 0.0;
-    camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus);
+    camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus, 0, 1);
 
     for (int j = image_height - 1; j >= 0; j--)
     {

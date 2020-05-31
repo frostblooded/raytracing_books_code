@@ -18,7 +18,7 @@ struct ray
 
     vec3 orig;
     vec3 dir;
-    double tm;
+    float tm;
 };
 
 #endif
