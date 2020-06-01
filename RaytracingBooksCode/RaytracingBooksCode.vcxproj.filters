@@ -48,6 +48,12 @@
     <ClCompile Include="bvh_node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="solid_color.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="checker_texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vec3.h">
@@ -93,6 +99,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="bvh_node.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="solid_color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="checker_texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

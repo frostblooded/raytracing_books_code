@@ -13,6 +13,8 @@ struct sphere : public hitable
     virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const;
     bool bounding_box(float t0, float t1, aabb& output_box) const;
 
+    static void get_uv(const vec3& p, float& u, float& v);
+
     vec3 center;
     float radius;
     shared_ptr<material> mat;

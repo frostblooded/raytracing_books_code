@@ -1,5 +1,6 @@
 #include <iostream>
 #include <chrono>
+#include "solid_color.h"
 #define _USE_MATH_DEFINES
 #include "math.h"
 #include "bvh_node.h"
@@ -15,6 +16,7 @@
 #include "sphere.h"
 #include "moving_sphere.h"
 #include "camera.h"
+#include "checker_texture.h"
 #include <cfloat>
 
 using namespace std;
@@ -22,7 +24,12 @@ using namespace std;
 hitable_list random_scene() {
     vector<shared_ptr<hitable>> list;
 
-    auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
+    auto checker = make_shared<checker_texture>(
+        make_shared<solid_color>(0.2, 0.3, 0.1),
+        make_shared<solid_color>(0.9, 0.9, 0.9)
+	);
+
+    auto ground_material = make_shared<lambertian>(checker);
     list.push_back(make_shared<sphere>(vec3(0, -1000, 0), 1000, ground_material));
 
     for (int a = -11; a < 11; a++) {
@@ -34,7 +41,7 @@ hitable_list random_scene() {
                 shared_ptr<material> sphere_material;
 
                 if (choose_mat < 0.8) {
-                    auto albedo = color::random_vec() * color::random_vec();
+                    auto albedo = make_shared<solid_color>(color::random_vec() * color::random_vec());
                     sphere_material = make_shared<lambertian>(albedo);
                     auto center2 = center + vec3(0, random(0, 0.5), 0);
                     list.push_back(make_shared<moving_sphere>(center, center2, 0, 1, 0.2, sphere_material));
@@ -54,7 +61,7 @@ hitable_list random_scene() {
     }
 
     list.push_back(make_shared<sphere>(vec3(0, 1, 0), 1.0, make_shared<dielectric>(1.5)));
-    list.push_back(make_shared<sphere>(vec3(-4, 1, 0), 1.0, make_shared<lambertian>(vec3(0.4, 0.2, 0.1))));
+    list.push_back(make_shared<sphere>(vec3(-4, 1, 0), 1.0, make_shared<lambertian>(make_shared<solid_color>(vec3(0.4, 0.2, 0.1)))));
     list.push_back(make_shared<sphere>(vec3(4, 1, 0), 1.0, make_shared<metal>(vec3(0.7, 0.6, 0.5), 0)));
 
     return hitable_list(list);
@@ -86,6 +93,20 @@ vec3 ray_color(const ray& r, bvh_node& world, int depth)
     return (1.0 - t) * vec3(1, 1, 1) + t * vec3(0.5, 0.7, 1);
 }
 
+hitable_list two_spheres() {
+    hitable_list objects;
+
+    auto checker = make_shared<checker_texture>(
+        make_shared<solid_color>(0.2, 0.3, 0.1),
+        make_shared<solid_color>(0.9, 0.9, 0.9)
+	);
+
+    objects.add(make_shared<sphere>(point3(0, -10, 0), 10, make_shared<lambertian>(checker)));
+    objects.add(make_shared<sphere>(point3(0, 10, 0), 10, make_shared<lambertian>(checker)));
+
+    return objects;
+}
+
 int main()
 {
     auto t1 = chrono::high_resolution_clock::now();
@@ -93,14 +114,15 @@ int main()
     ofstream file;
     file.open("test.ppm");
 
-    int image_width = 400;
-    int image_height = 300;
+    int image_width = 1200;
+    int image_height = 800;
     int samples_per_pixel = 100;
     const auto aspect_ratio = float(image_width) / image_height;
 
     file << "P3\n" << image_width << " " << image_height << "\n255\n";
 
-    hitable_list objects = random_scene();
+    //hitable_list objects = random_scene();
+    hitable_list objects = two_spheres();
     bvh_node world(objects, 0, 1);
     vec3 lookfrom(13, 2, 3);
     vec3 lookat(0, 0, 0);
