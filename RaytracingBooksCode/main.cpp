@@ -1,4 +1,6 @@
 #include <iostream>
+#include "image_texture.h"
+#include "noise_texture.h"
 #include <chrono>
 #include "solid_color.h"
 #define _USE_MATH_DEFINES
@@ -107,6 +109,29 @@ hitable_list two_spheres() {
     return objects;
 }
 
+hitable_list two_perlin_spheres() {
+    hitable_list objects;
+
+    auto pertext = make_shared<noise_texture>(5);
+
+    objects.add(make_shared<sphere>(point3(0, -1000, 0), 1000, make_shared<lambertian>(pertext)));
+    objects.add(make_shared<sphere>(point3(0, 2, 0), 2, make_shared<lambertian>(pertext)));
+
+    return objects;
+}
+
+hitable_list earth() {
+    hitable_list objects;
+
+    auto earth_texture = make_shared<image_texture>("earthmap.jpg");
+    auto earth_surface = make_shared<lambertian>(earth_texture);
+
+    auto globe = make_shared<sphere>(point3(0, 0, 0), 2, earth_surface);
+    objects.add(globe);
+
+    return objects;
+}
+
 int main()
 {
     auto t1 = chrono::high_resolution_clock::now();
@@ -114,15 +139,15 @@ int main()
     ofstream file;
     file.open("test.ppm");
 
-    int image_width = 1200;
-    int image_height = 800;
+    int image_width = 400;
+    int image_height = 300;
     int samples_per_pixel = 100;
     const auto aspect_ratio = float(image_width) / image_height;
 
     file << "P3\n" << image_width << " " << image_height << "\n255\n";
 
     //hitable_list objects = random_scene();
-    hitable_list objects = two_spheres();
+    hitable_list objects = earth();
     bvh_node world(objects, 0, 1);
     vec3 lookfrom(13, 2, 3);
     vec3 lookat(0, 0, 0);
