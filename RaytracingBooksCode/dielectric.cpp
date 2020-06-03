@@ -35,13 +35,11 @@ bool dielectric::scatter(const ray& r_in, const hit_record& rec, vec3& attenuati
 	float reflect_prob;
 	float cosine;
 
-	if (r_in.direction().dot(rec.normal) > 0) {
-		outward_normal = -rec.normal;
+	if (rec.front_face) {
 		ni_over_nt = ref_idx;
 		cosine = ref_idx * r_in.direction().dot(rec.normal) / r_in.direction().length();
 	}
 	else {
-		outward_normal = rec.normal;
 		ni_over_nt = 1 / ref_idx;
 		cosine = -r_in.direction().dot(rec.normal) / r_in.direction().length();
 	}

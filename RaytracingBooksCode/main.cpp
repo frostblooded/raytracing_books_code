@@ -1,5 +1,13 @@
 #include <iostream>
 #include "image_texture.h"
+#include "rotate_y.h"
+#include "translate.h"
+#include "box.h"
+#include "flip_face.h"
+#include "xy_rect.h"
+#include "xz_rect.h"
+#include "yz_rect.h"
+#include "diffuse_light.h"
 #include "noise_texture.h"
 #include <chrono>
 #include "solid_color.h"
@@ -69,7 +77,7 @@ hitable_list random_scene() {
     return hitable_list(list);
 }
 
-vec3 ray_color(const ray& r, bvh_node& world, int depth)
+vec3 ray_color(const ray& r, const color& background, const bvh_node& world, int depth)
 {
     if (depth <= 0) {
         return vec3(0, 0, 0);
@@ -77,22 +85,20 @@ vec3 ray_color(const ray& r, bvh_node& world, int depth)
 
     hit_record rec;
 
-    if (world.hit(r, 0.001, FLT_MAX, rec))
-    {
-        ray scattered;
-        color attenuation;
-
-        if (rec.mat_ptr->scatter(r, rec, attenuation, scattered))
-        {
-            return attenuation * ray_color(scattered, world, depth - 1);
-        }
-
-        return color(0, 0, 0);
+    if (!world.hit(r, 0.001, FLT_MAX, rec)) {
+        return background;
     }
 
-    vec3 unit_direction = r.direction().unit_vector();
-    float t = 0.5 * (unit_direction.y() + 1.0);
-    return (1.0 - t) * vec3(1, 1, 1) + t * vec3(0.5, 0.7, 1);
+	ray scattered;
+	color attenuation;
+    color emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
+
+	if (!rec.mat_ptr->scatter(r, rec, attenuation, scattered))
+	{
+		return emitted;
+	}
+
+	return emitted + attenuation * ray_color(scattered, background, world, depth - 1);
 }
 
 hitable_list two_spheres() {
@@ -132,6 +138,48 @@ hitable_list earth() {
     return objects;
 }
 
+hitable_list simple_light() {
+    hitable_list objects;
+
+    auto pertext = make_shared<noise_texture>(4);
+    objects.add(make_shared<sphere>(point3(0, -1000, 0), 1000, make_shared<lambertian>(pertext)));
+    objects.add(make_shared<sphere>(point3(0, 2, 0), 2, make_shared<lambertian>(pertext)));
+
+    auto difflight = make_shared<diffuse_light>(make_shared<solid_color>(4, 4, 4));
+    // objects.add(make_shared<sphere>(point3(0, 7, 0), 2, difflight));
+    objects.add(make_shared<xy_rect>(3, 5, 1, 3, -2, difflight));
+
+    return objects;
+}
+
+hitable_list cornell_box() {
+    hitable_list objects;
+
+    auto red = make_shared<lambertian>(make_shared<solid_color>(.65, .05, .05));
+    auto white = make_shared<lambertian>(make_shared<solid_color>(.73, .73, .73));
+    auto green = make_shared<lambertian>(make_shared<solid_color>(.12, .45, .15));
+    auto light = make_shared<diffuse_light>(make_shared<solid_color>(15, 15, 15));
+
+    objects.add(make_shared<flip_face>(make_shared<yz_rect>(0, 555, 0, 555, 555, green)));
+    objects.add(make_shared<yz_rect>(0, 555, 0, 555, 0, red));
+    objects.add(make_shared<xz_rect>(213, 343, 227, 332, 554, light));
+    objects.add(make_shared<flip_face>(make_shared<xz_rect>(0, 555, 0, 555, 0, white)));
+    objects.add(make_shared<xz_rect>(0, 555, 0, 555, 555, white));
+    objects.add(make_shared<flip_face>(make_shared<xy_rect>(0, 555, 0, 555, 555, white)));
+
+    shared_ptr<hitable> box1 = make_shared<box>(point3(0, 0, 0), point3(165, 330, 165), white);
+    box1 = make_shared<rotate_y>(box1, 15);
+    box1 = make_shared<translate>(box1, vec3(265, 0, 295));
+    objects.add(box1);
+
+    shared_ptr<hitable> box2 = make_shared<box>(point3(0, 0, 0), point3(165, 165, 165), white);
+    box2 = make_shared<rotate_y>(box2, -18);
+    box2 = make_shared<translate>(box2, vec3(130, 0, 65));
+    objects.add(box2);
+
+    return objects;
+}
+
 int main()
 {
     auto t1 = chrono::high_resolution_clock::now();
@@ -146,15 +194,16 @@ int main()
 
     file << "P3\n" << image_width << " " << image_height << "\n255\n";
 
-    //hitable_list objects = random_scene();
-    hitable_list objects = earth();
+    hitable_list objects = cornell_box();
     bvh_node world(objects, 0, 1);
-    vec3 lookfrom(13, 2, 3);
-    vec3 lookat(0, 0, 0);
+    vec3 lookfrom(278, 278, -800);
+    vec3 lookat(278, 278, 0);
     vec3 vup(0, 1, 0);
     float dist_to_focus = 10;
     float aperture = 0.0;
-    camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus, 0, 1);
+    auto vfov = 40;
+    const color background(0, 0, 0);
+    camera cam(lookfrom, lookat, vup, vfov, aspect_ratio, aperture, dist_to_focus, 0, 1);
 
     for (int j = image_height - 1; j >= 0; j--)
     {
@@ -168,7 +217,7 @@ int main()
                 float v = float(j + random()) / float(image_height);
 
                 ray r = cam.get_ray(u, v);
-                col += ray_color(r, world, 50);
+                col += ray_color(r, background, world, 50);
             }
 
             col /= float(samples_per_pixel);

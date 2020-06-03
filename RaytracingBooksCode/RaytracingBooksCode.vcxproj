@@ -142,28 +142,40 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="aabb.cpp" />
+    <ClCompile Include="box.cpp" />
     <ClCompile Include="bvh_node.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="checker_texture.cpp" />
     <ClCompile Include="dielectric.cpp" />
+    <ClCompile Include="diffuse_light.cpp" />
+    <ClCompile Include="flip_face.cpp" />
     <ClCompile Include="hitable.cpp" />
     <ClCompile Include="hitable_list.cpp" />
     <ClCompile Include="image_texture.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="material.cpp" />
     <ClCompile Include="moving_sphere.cpp" />
     <ClCompile Include="noise_texture.cpp" />
     <ClCompile Include="perlin.cpp" />
     <ClCompile Include="random.cpp" />
+    <ClCompile Include="rotate_y.cpp" />
     <ClCompile Include="solid_color.cpp" />
     <ClCompile Include="sphere.cpp" />
+    <ClCompile Include="translate.cpp" />
     <ClCompile Include="vec3.cpp" />
+    <ClCompile Include="xy_rect.cpp" />
+    <ClCompile Include="xz_rect.cpp" />
+    <ClCompile Include="yz_rect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aabb.h" />
+    <ClInclude Include="box.h" />
     <ClInclude Include="bvh_node.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="checker_texture.h" />
     <ClInclude Include="dielectric.h" />
+    <ClInclude Include="diffuse_light.h" />
+    <ClInclude Include="flip_face.h" />
     <ClInclude Include="hitable.h" />
     <ClInclude Include="hitable_list.h" />
     <ClInclude Include="hit_record.h" />
@@ -176,11 +188,16 @@
     <ClInclude Include="perlin.h" />
     <ClInclude Include="random.h" />
     <ClInclude Include="ray.h" />
+    <ClInclude Include="rotate_y.h" />
     <ClInclude Include="rtw_stb_image.h" />
     <ClInclude Include="solid_color.h" />
     <ClInclude Include="sphere.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="translate.h" />
     <ClInclude Include="vec3.h" />
+    <ClInclude Include="xy_rect.h" />
+    <ClInclude Include="xz_rect.h" />
+    <ClInclude Include="yz_rect.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
