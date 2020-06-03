@@ -90,6 +90,12 @@
     <ClCompile Include="rotate_y.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="isotropic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="constant_medium.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vec3.h">
@@ -180,6 +186,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="rotate_y.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="isotropic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="constant_medium.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
